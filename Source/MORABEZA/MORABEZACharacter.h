@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UMORABEZAInteractionComponent;
 
 UCLASS()
 class MORABEZA_API AMORABEZACharacter : public ACharacter
@@ -14,6 +15,9 @@ class MORABEZA_API AMORABEZACharacter : public ACharacter
 
 public:
     AMORABEZACharacter();
+
+    UFUNCTION(BlueprintCallable, Category = "Interaction")
+    void Interact();
 
 protected:
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -29,4 +33,7 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category = "Camera")
     TObjectPtr<UCameraComponent> FollowCamera;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UMORABEZAInteractionComponent> InteractionComponent;
 };
