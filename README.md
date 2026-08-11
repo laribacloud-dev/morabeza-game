@@ -7,23 +7,32 @@
 ## Project Status
 
 **Phase:** 0 — Foundation  
-**Milestone:** M0.1 — Playable Prototype Foundation
+**Milestone:** M0.2 — Praia Prototype Scene
 
-The first playable target is a focused vertical slice of Praia, Santiago:
+The current code foundation provides:
 
 - Third-person player controller
-- Basic exploration
-- Vehicle prototype
-- NPC prototype
-- Interaction system
-- Day/night cycle
-- Money/economy foundation
-- Mission foundation
-- Save/load foundation
+- Camera and movement
+- World interaction interface
+- Player interaction tracing
+- `E` interaction input
+- First mission contact actor
+- Player money and reputation state
+- Save-game state model
+- GameMode wiring for MORABEZA player state
+
+The next playable target is a focused fictionalized Praia scene:
+
+- Urban streets and buildings
+- Coastal/viewpoint landmark
+- Basic lighting/day-night baseline
+- First NPC/contact
+- Interaction prompt
+- Foundation for mission `VOLTA_INTRO`
 
 ## Technology
 
-- Unreal Engine 5
+- Unreal Engine 5.6
 - C++ for core gameplay systems
 - Blueprints for rapid iteration and content authoring
 - Git/GitHub for source control
@@ -36,6 +45,7 @@ MORABEZA/
 ├── Content/
 ├── Docs/
 ├── Source/
+│   └── MORABEZA/
 ├── .gitignore
 ├── MORABEZA.uproject
 └── README.md
@@ -52,6 +62,12 @@ MORABEZA/
 ## First Definition of Done
 
 Launch → spawn in Praia → walk → enter a vehicle → drive → interact with an NPC → receive a mission → complete it → earn money → save → reload.
+
+## Current Milestone
+
+**M0.2 — Build Praia prototype scene** is tracked in GitHub Issue #1.
+
+The Unreal Engine project must be opened locally to create and validate the binary map/assets (`.umap`, `.uasset`) that cannot be meaningfully authored through GitHub's text-file API alone.
 
 ## License
 
