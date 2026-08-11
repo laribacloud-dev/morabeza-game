@@ -1,0 +1,48 @@
+# Unreal Engine generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# Visual Studio / Rider / IDE
+.vs/
+.idea/
+.vscode/
+*.sln
+*.suo
+*.user
+*.userprefs
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unreal generated project files
+*.sln
+*.xcodeproj
+*.xcworkspace
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Build artifacts
+*.pdb
+*.dll
+*.dylib
+*.so
+
+# Local secrets / environment
+.env
+.env.*
+!.env.example
+
+# Large local assets - keep source assets in controlled project storage
+*.psd
+*.blend1
