@@ -1,0 +1,19 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.6",
+  "Category": "Games",
+  "Description": "MORABEZA — open-world game inspired by Cape Verdean reality, culture and landscapes.",
+  "Modules": [
+    {
+      "Name": "MORABEZA",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "EnhancedInput",
+      "Enabled": true
+    }
+  ]
+}
