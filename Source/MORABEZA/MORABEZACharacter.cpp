@@ -3,6 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
+#include "MORABEZAInteractionComponent.h"
 
 AMORABEZACharacter::AMORABEZACharacter()
 {
@@ -16,6 +17,8 @@ AMORABEZACharacter::AMORABEZACharacter()
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
+
+    InteractionComponent = CreateDefaultSubobject<UMORABEZAInteractionComponent>(TEXT("InteractionComponent"));
 
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -34,6 +37,15 @@ void AMORABEZACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     PlayerInputComponent->BindAxis("LookUp", this, &AMORABEZACharacter::LookUp);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMORABEZACharacter::Interact);
+}
+
+void AMORABEZACharacter::Interact()
+{
+    if (InteractionComponent)
+    {
+        InteractionComponent->TryInteract();
+    }
 }
 
 void AMORABEZACharacter::MoveForward(float Value)
