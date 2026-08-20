@@ -5,20 +5,53 @@
 #include "MORABEZAInteractable.h"
 #include "MORABEZAContactActor.generated.h"
 
+class UStaticMeshComponent;
+class UMORABEZADialogueComponent;
+
 UCLASS(Blueprintable)
-class MORABEZA_API AMORABEZAContactActor : public AActor, public IMORABEZAInteractable
+class MORABEZA_API AMORABEZAContactActor
+    : public AActor
+    , public IMORABEZAInteractable
 {
     GENERATED_BODY()
 
 public:
+
     AMORABEZAContactActor();
 
-    virtual void Interact_Implementation(AActor* Interactor) override;
-    virtual FText GetInteractionPrompt_Implementation() const override;
+    virtual void Interact_Implementation(
+        AActor* Interactor
+    ) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission")
+    virtual FText GetInteractionPrompt_Implementation()
+        const override;
+
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category="Contact"
+    )
+    TObjectPtr<UStaticMeshComponent> Mesh;
+
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category="Dialogue"
+    )
+    TObjectPtr<UMORABEZADialogueComponent> DialogueComponent;
+
+    UPROPERTY(
+        EditAnywhere,
+        BlueprintReadWrite,
+        Category="Mission"
+    )
     FName MissionId = TEXT("VOLTA_INTRO");
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mission")
-    FText ContactName = FText::FromString(TEXT("Contact"));
+    UPROPERTY(
+        EditAnywhere,
+        BlueprintReadWrite,
+        Category="Mission"
+    )
+    FText ContactName =
+        FText::FromString(TEXT("Contact"));
 };

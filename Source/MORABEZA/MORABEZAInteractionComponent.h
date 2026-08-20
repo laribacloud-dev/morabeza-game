@@ -21,13 +21,19 @@ public:
     void UpdateInteractionTarget();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-    float InteractionDistance = 250.0f;
+    float InteractionDistance = 350.0f;
 
     UPROPERTY(BlueprintAssignable, Category = "Interaction")
     FMORABEZAInteractionPromptChanged OnPromptChanged;
 
 protected:
     virtual void BeginPlay() override;
+
+    virtual void TickComponent(
+        float DeltaTime,
+        ELevelTick TickType,
+        FActorComponentTickFunction* ThisTickFunction
+    ) override;
 
 private:
     TWeakObjectPtr<AActor> CurrentTarget;

@@ -7,6 +7,14 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UMORABEZAInteractionComponent;
+class UMORABEZAProceduralCharacterComponent;
+class UAnimationAsset;
+
+class UInputComponent;
+class UInputAction;
+class UInputMappingContext;
+
+struct FInputActionValue;
 
 UCLASS()
 class MORABEZA_API AMORABEZACharacter : public ACharacter
@@ -14,26 +22,176 @@ class MORABEZA_API AMORABEZACharacter : public ACharacter
     GENERATED_BODY()
 
 public:
+
     AMORABEZACharacter();
+
+    virtual void Tick(float DeltaTime) override;
 
     UFUNCTION(BlueprintCallable, Category = "Interaction")
     void Interact();
 
 protected:
-    virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+    virtual void BeginPlay() override;
+
+    virtual void SetupPlayerInputComponent(
+        UInputComponent* PlayerInputComponent
+    ) override;
 
 private:
-    void MoveForward(float Value);
-    void MoveRight(float Value);
-    void Turn(float Value);
-    void LookUp(float Value);
 
-    UPROPERTY(VisibleAnywhere, Category = "Camera")
+    /*
+     * ============================================================
+     * ENHANCED INPUT
+     * ============================================================
+     */
+
+    void MoveForward(
+        const FInputActionValue& Value
+    );
+
+    void MoveRight(
+        const FInputActionValue& Value
+    );
+
+    void Turn(
+        const FInputActionValue& Value
+    );
+
+    void LookUp(
+        const FInputActionValue& Value
+    );
+
+    void StartJump(
+        const FInputActionValue& Value
+    );
+
+    void StopJump(
+        const FInputActionValue& Value
+    );
+
+    void StartSprint(
+        const FInputActionValue& Value
+    );
+
+    void StopSprint(
+        const FInputActionValue& Value
+    );
+
+    void HandleInteract(
+        const FInputActionValue& Value
+    );
+
+
+    /*
+     * ============================================================
+     * INPUT ASSETS
+     * ============================================================
+     */
+
+    UPROPERTY()
+    TObjectPtr<UInputMappingContext> InputMappingContext;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> MoveForwardAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> MoveRightAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> TurnAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> LookUpAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> JumpAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> InteractAction;
+
+    UPROPERTY()
+    TObjectPtr<UInputAction> SprintAction;
+
+
+    /*
+     * ============================================================
+     * CAMERA
+     * ============================================================
+     */
+
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Camera",
+        meta = (AllowPrivateAccess = "true")
+    )
     TObjectPtr<USpringArmComponent> CameraBoom;
 
-    UPROPERTY(VisibleAnywhere, Category = "Camera")
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Camera",
+        meta = (AllowPrivateAccess = "true")
+    )
     TObjectPtr<UCameraComponent> FollowCamera;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+
+    /*
+     * ============================================================
+     * INTERACTION
+     * ============================================================
+     */
+
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Interaction",
+        meta = (AllowPrivateAccess = "true")
+    )
     TObjectPtr<UMORABEZAInteractionComponent> InteractionComponent;
+
+
+    /*
+     * ============================================================
+     * PROCEDURAL CHARACTER
+     * ============================================================
+     */
+
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "MORABEZA|Character",
+        meta = (AllowPrivateAccess = "true")
+    )
+    TObjectPtr<UMORABEZAProceduralCharacterComponent> ProceduralCharacter;
+
+
+    /*
+     * ============================================================
+     * ANIMATIONS
+     * ============================================================
+     */
+
+    UPROPERTY()
+    TObjectPtr<UAnimationAsset> IdleAnimation;
+
+    UPROPERTY()
+    TObjectPtr<UAnimationAsset> WalkAnimation;
+
+    UPROPERTY()
+    TObjectPtr<UAnimationAsset> RunAnimation;
+
+
+    /*
+     * ============================================================
+     * MOVEMENT SETTINGS
+     * ============================================================
+ */
+
+    UPROPERTY(EditAnywhere, Category = "MORABEZA|Movement")
+    float WalkSpeed = 250.0f;
+
+    UPROPERTY(EditAnywhere, Category = "MORABEZA|Movement")
+    float SprintSpeed = 600.0f;
 };
