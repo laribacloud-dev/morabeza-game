@@ -11,4 +11,10 @@ class MORABEZA_API AMORABEZAGameMode : public AGameModeBase
 
 public:
     AMORABEZAGameMode();
+
+protected:
+    virtual void BeginPlay() override;
+
+private:
+    void SpawnTestContact();
 };

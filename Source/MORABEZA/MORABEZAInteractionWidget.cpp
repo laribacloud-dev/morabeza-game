@@ -3,63 +3,103 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Border.h"
 #include "Components/TextBlock.h"
 
-void UMORABEZAInteractionWidget::NativeConstruct()
+TSharedRef<SWidget> UMORABEZAInteractionWidget::RebuildWidget()
 {
-    Super::NativeConstruct();
-
     UE_LOG(
         LogTemp,
         Warning,
-        TEXT("MORABEZA WIDGET: NativeConstruct started.")
+        TEXT("MORABEZA WIDGET: RebuildWidget START")
     );
-
-    /*
-     * ============================================================
-     * ROOT CANVAS
-     * ============================================================
-     */
 
     UCanvasPanel* Canvas =
         WidgetTree->ConstructWidget<UCanvasPanel>(
-            UCanvasPanel::StaticClass()
+            UCanvasPanel::StaticClass(),
+            TEXT("InteractionRootCanvas")
         );
 
     WidgetTree->RootWidget = Canvas;
 
-    Canvas->SetVisibility(
-        ESlateVisibility::SelfHitTestInvisible
+    UBorder* Panel =
+        WidgetTree->ConstructWidget<UBorder>(
+            UBorder::StaticClass(),
+            TEXT("InteractionPanel")
+        );
+
+    Canvas->AddChild(Panel);
+
+    Panel->SetBrushColor(
+        FLinearColor(
+            0.02f,
+            0.02f,
+            0.02f,
+            0.95f
+        )
     );
 
+    Panel->SetPadding(
+        FMargin(
+            24.0f,
+            14.0f
+        )
+    );
 
-    /*
-     * ============================================================
-     * INTERACTION TEXT
-     * ============================================================
-     */
+    UCanvasPanelSlot* PanelSlot =
+        Cast<UCanvasPanelSlot>(
+            Panel->Slot
+        );
+
+    if (PanelSlot)
+    {
+        PanelSlot->SetAnchors(
+            FAnchors(
+                0.5f,
+                0.78f,
+                0.5f,
+                0.78f
+            )
+        );
+
+        PanelSlot->SetAlignment(
+            FVector2D(
+                0.5f,
+                0.5f
+            )
+        );
+
+        PanelSlot->SetPosition(
+            FVector2D::ZeroVector
+        );
+
+        PanelSlot->SetSize(
+            FVector2D(
+                650.0f,
+                90.0f
+            )
+        );
+    }
 
     InteractionText =
         WidgetTree->ConstructWidget<UTextBlock>(
-            UTextBlock::StaticClass()
+            UTextBlock::StaticClass(),
+            TEXT("InteractionText")
         );
 
-    Canvas->AddChild(InteractionText);
+    Panel->SetContent(
+        InteractionText
+    );
 
     InteractionText->SetText(
-        FText::GetEmpty()
+        FText::FromString(
+            TEXT("[E] Falar com Test Contact")
+        )
     );
 
     InteractionText->SetJustification(
         ETextJustify::Center
     );
-
-
-    /*
-     * ============================================================
-     * LARGE, CLEAR DEBUG FONT
-     * ============================================================
-     */
 
     FSlateFontInfo FontInfo =
         InteractionText->GetFont();
@@ -70,66 +110,61 @@ void UMORABEZAInteractionWidget::NativeConstruct()
         FontInfo
     );
 
-
-    /*
-     * ============================================================
-     * FULL-SCREEN CANVAS POSITION
-     * ============================================================
-     */
-
-    UCanvasPanelSlot* CanvasSlot =
-        Cast<UCanvasPanelSlot>(
-            InteractionText->Slot
-        );
-
-    if (CanvasSlot)
-    {
-        /*
-         * Center horizontally.
-         */
-        FAnchors Anchors;
-
-        Anchors.Minimum =
-            FVector2D(0.5f, 0.80f);
-
-        Anchors.Maximum =
-            FVector2D(0.5f, 0.80f);
-
-        CanvasSlot->SetAnchors(
-            Anchors
-        );
-
-        CanvasSlot->SetAlignment(
-            FVector2D(0.5f, 0.5f)
-        );
-
-        CanvasSlot->SetPosition(
-            FVector2D::ZeroVector
-        );
-
-        CanvasSlot->SetSize(
-            FVector2D(800.0f, 80.0f)
-        );
-    }
-
-
-    /*
-     * ============================================================
-     * START HIDDEN
-     * ============================================================
-     */
+    InteractionText->SetColorAndOpacity(
+        FSlateColor(
+            FLinearColor(
+                1.0f,
+                1.0f,
+                1.0f,
+                1.0f
+            )
+        )
+    );
 
     InteractionText->SetVisibility(
-        ESlateVisibility::Collapsed
+        ESlateVisibility::Visible
+    );
+
+    Panel->SetVisibility(
+        ESlateVisibility::Visible
     );
 
     UE_LOG(
         LogTemp,
         Warning,
-        TEXT("MORABEZA WIDGET: NativeConstruct finished.")
+        TEXT("MORABEZA WIDGET: Interaction tree constructed")
     );
+
+    TSharedRef<SWidget> Result =
+        Super::RebuildWidget();
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA WIDGET: RebuildWidget COMPLETE")
+    );
+
+    return Result;
 }
 
+void UMORABEZAInteractionWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SetRenderOpacity(
+        1.0f
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA WIDGET: NativeConstruct COMPLETE")
+    );
+}
 
 void UMORABEZAInteractionWidget::SetInteractionPrompt(
     const FText& Prompt
@@ -140,9 +175,7 @@ void UMORABEZAInteractionWidget::SetInteractionPrompt(
         UE_LOG(
             LogTemp,
             Error,
-            TEXT(
-                "MORABEZA WIDGET: InteractionText is NULL."
-            )
+            TEXT("MORABEZA WIDGET: InteractionText is NULL.")
         );
 
         return;
@@ -151,9 +184,7 @@ void UMORABEZAInteractionWidget::SetInteractionPrompt(
     UE_LOG(
         LogTemp,
         Warning,
-        TEXT(
-            "MORABEZA WIDGET: Prompt received = '%s'"
-        ),
+        TEXT("MORABEZA WIDGET: Prompt received = '%s'"),
         *Prompt.ToString()
     );
 
@@ -170,23 +201,27 @@ void UMORABEZAInteractionWidget::SetInteractionPrompt(
         UE_LOG(
             LogTemp,
             Warning,
-            TEXT(
-                "MORABEZA WIDGET: Prompt hidden."
-            )
-        );
-    }
-    else
-    {
-        InteractionText->SetVisibility(
-            ESlateVisibility::HitTestInvisible
+            TEXT("MORABEZA WIDGET: Prompt COLLAPSED")
         );
 
-        UE_LOG(
-            LogTemp,
-            Warning,
-            TEXT(
-                "MORABEZA WIDGET: Prompt VISIBLE."
-            )
-        );
+        return;
     }
+
+    SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SetRenderOpacity(
+        1.0f
+    );
+
+    InteractionText->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA WIDGET: Prompt VISIBLE")
+    );
 }

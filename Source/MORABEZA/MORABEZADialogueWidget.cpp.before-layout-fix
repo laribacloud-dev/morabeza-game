@@ -1,0 +1,650 @@
+#include "MORABEZADialogueWidget.h"
+
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Border.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/WidgetTree.h"
+
+UMORABEZADialogueWidget::UMORABEZADialogueWidget(
+    const FObjectInitializer& ObjectInitializer
+)
+    : Super(ObjectInitializer)
+{
+}
+
+void UMORABEZADialogueWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("==================================================")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: NativeConstruct")
+    );
+
+    /*
+     * ============================================================
+     * ROOT CANVAS
+     * ============================================================
+     */
+
+    RootCanvas =
+        WidgetTree->ConstructWidget<UCanvasPanel>(
+            UCanvasPanel::StaticClass(),
+            TEXT("DialogueRootCanvas")
+        );
+
+    if (!RootCanvas)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: FAILED TO CREATE ROOT CANVAS")
+        );
+
+        return;
+    }
+
+    WidgetTree->RootWidget = RootCanvas;
+
+    /*
+     * ============================================================
+     * DIALOGUE PANEL
+     * ============================================================
+     */
+
+    DialoguePanel =
+        WidgetTree->ConstructWidget<UBorder>(
+            UBorder::StaticClass(),
+            TEXT("DialoguePanel")
+        );
+
+    if (!DialoguePanel)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: FAILED TO CREATE DIALOGUE PANEL")
+        );
+
+        return;
+    }
+
+    RootCanvas->AddChild(DialoguePanel);
+
+    /*
+     * ============================================================
+     * PANEL LAYOUT
+     * ============================================================
+     *
+     * Bottom-center dialogue box.
+     *
+     * Anchors:
+     *   X = 0.5
+     *   Y = 1.0
+     *
+     * Alignment:
+     *   X = 0.5
+     *   Y = 1.0
+     *
+     * Position:
+     *   X = 0
+     *   Y = -80
+     *
+     * Size:
+     *   1100 x 300
+     */
+
+    UCanvasPanelSlot* PanelSlot =
+        Cast<UCanvasPanelSlot>(DialoguePanel->Slot);
+
+    if (!PanelSlot)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: FAILED TO CREATE PANEL SLOT")
+        );
+
+        return;
+    }
+
+    PanelSlot->SetAnchors(
+        FAnchors(
+            0.5f,
+            1.0f
+        )
+    );
+
+    PanelSlot->SetAlignment(
+        FVector2D(
+            0.5f,
+            1.0f
+        )
+    );
+
+    PanelSlot->SetPosition(
+        FVector2D(
+            0.0f,
+            -80.0f
+        )
+    );
+
+    PanelSlot->SetSize(
+        FVector2D(
+            1100.0f,
+            300.0f
+        )
+    );
+
+    /*
+     * ============================================================
+     * PANEL APPEARANCE
+     * ============================================================
+     */
+
+    DialoguePanel->SetBrushColor(
+        FLinearColor(
+            0.01f,
+            0.01f,
+            0.01f,
+            0.94f
+        )
+    );
+
+    DialoguePanel->SetPadding(
+        FMargin(
+            45.0f,
+            35.0f,
+            45.0f,
+            35.0f
+        )
+    );
+
+    /*
+     * ============================================================
+     * CONTENT CONTAINER
+     * ============================================================
+     */
+
+    DialogueContent =
+        WidgetTree->ConstructWidget<UVerticalBox>(
+            UVerticalBox::StaticClass(),
+            TEXT("DialogueContent")
+        );
+
+    if (!DialogueContent)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: FAILED TO CREATE CONTENT")
+        );
+
+        return;
+    }
+
+    DialoguePanel->SetContent(
+        DialogueContent
+    );
+
+    /*
+     * ============================================================
+     * SPEAKER TEXT
+     * ============================================================
+     */
+
+    SpeakerText =
+        WidgetTree->ConstructWidget<UTextBlock>(
+            UTextBlock::StaticClass(),
+            TEXT("SpeakerText")
+        );
+
+    if (SpeakerText)
+    {
+        SpeakerText->SetText(
+            FText::FromString(
+                TEXT("TEST CONTACT")
+            )
+        );
+
+        SpeakerText->SetColorAndOpacity(
+            FSlateColor(
+                FLinearColor(
+                    1.0f,
+                    0.75f,
+                    0.15f,
+                    1.0f
+                )
+            )
+        );
+
+        FSlateFontInfo SpeakerFont =
+            SpeakerText->GetFont();
+
+        SpeakerFont.Size = 32;
+
+        SpeakerText->SetFont(
+            SpeakerFont
+        );
+
+        SpeakerText->SetAutoWrapText(
+            true
+        );
+
+        UVerticalBoxSlot* SpeakerSlot =
+            DialogueContent->AddChildToVerticalBox(
+                SpeakerText
+            );
+
+        if (SpeakerSlot)
+        {
+            SpeakerSlot->SetPadding(
+                FMargin(
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    20.0f
+                )
+            );
+        }
+    }
+
+    /*
+     * ============================================================
+     * DIALOGUE TEXT
+     * ============================================================
+     */
+
+    DialogueText =
+        WidgetTree->ConstructWidget<UTextBlock>(
+            UTextBlock::StaticClass(),
+            TEXT("DialogueText")
+        );
+
+    if (DialogueText)
+    {
+        DialogueText->SetText(
+            FText::FromString(
+                TEXT("BEM-VINDO A MORABEZA.")
+            )
+        );
+
+        DialogueText->SetColorAndOpacity(
+            FSlateColor(
+                FLinearColor(
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f
+                )
+            )
+        );
+
+        FSlateFontInfo DialogueFont =
+            DialogueText->GetFont();
+
+        DialogueFont.Size = 28;
+
+        DialogueText->SetFont(
+            DialogueFont
+        );
+
+        DialogueText->SetAutoWrapText(
+            true
+        );
+
+        DialogueText->SetWrappingPolicy(
+            ETextWrappingPolicy::AllowPerCharacterWrapping
+        );
+
+        DialogueContent->AddChildToVerticalBox(
+            DialogueText
+        );
+    }
+
+    /*
+     * ============================================================
+     * INITIAL STATE
+     * ============================================================
+     */
+
+    SetVisibility(
+        ESlateVisibility::Collapsed
+    );
+
+    SetRenderOpacity(
+        1.0f
+    );
+
+    /*
+     * IMPORTANT:
+     *
+     * Make sure the internal widgets themselves are visible.
+     */
+
+    DialoguePanel->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    if (SpeakerText)
+    {
+        SpeakerText->SetVisibility(
+            ESlateVisibility::Visible
+        );
+    }
+
+    if (DialogueText)
+    {
+        DialogueText->SetVisibility(
+            ESlateVisibility::Visible
+        );
+    }
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: UI constructed successfully")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: Panel size = 1100 x 300")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("==================================================")
+    );
+}
+
+void UMORABEZADialogueWidget::ShowDialogue(
+    const FText& SpeakerName,
+    const FText& InDialogueText
+)
+{
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("==================================================")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: ShowDialogue CALLED")
+    );
+
+    /*
+     * ============================================================
+     * VALIDATION
+     * ============================================================
+     */
+
+    if (!RootCanvas)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: RootCanvas is NULL")
+        );
+
+        return;
+    }
+
+    if (!DialoguePanel)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: DialoguePanel is NULL")
+        );
+
+        return;
+    }
+
+    if (!DialogueContent)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: DialogueContent is NULL")
+        );
+
+        return;
+    }
+
+    if (!SpeakerText)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: SpeakerText is NULL")
+        );
+
+        return;
+    }
+
+    if (!DialogueText)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: DialogueText is NULL")
+        );
+
+        return;
+    }
+
+    /*
+     * ============================================================
+     * UPDATE TEXT
+     * ============================================================
+     */
+
+    SpeakerText->SetText(
+        SpeakerName
+    );
+
+    DialogueText->SetText(
+        InDialogueText
+    );
+
+    /*
+     * ============================================================
+     * FORCE VISIBILITY
+     * ============================================================
+     */
+
+    SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SetRenderOpacity(
+        1.0f
+    );
+
+    DialoguePanel->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    DialogueContent->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SpeakerText->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    DialogueText->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    /*
+     * ============================================================
+     * FORCE PANEL SIZE
+     * ============================================================
+     *
+     * This is intentional.
+     *
+     * We do not rely on desired size.
+     */
+
+    UCanvasPanelSlot* PanelSlot =
+        Cast<UCanvasPanelSlot>(
+            DialoguePanel->Slot
+        );
+
+    if (PanelSlot)
+    {
+        PanelSlot->SetAnchors(
+            FAnchors(
+                0.5f,
+                1.0f
+            )
+        );
+
+        PanelSlot->SetAlignment(
+            FVector2D(
+                0.5f,
+                1.0f
+            )
+        );
+
+        PanelSlot->SetPosition(
+            FVector2D(
+                0.0f,
+                -80.0f
+            )
+        );
+
+        PanelSlot->SetSize(
+            FVector2D(
+                1100.0f,
+                300.0f
+            )
+        );
+    }
+
+    /*
+     * ============================================================
+     * ADD TO VIEWPORT
+     * ============================================================
+     *
+     * The HUD should normally already own this widget.
+     *
+     * AddToViewport is kept here as a safety mechanism.
+     */
+
+    if (!IsInViewport())
+    {
+        AddToViewport(
+            2000
+        );
+    }
+
+    /*
+     * ============================================================
+     * FORCE LAYOUT INVALIDATION
+     * ============================================================
+     */
+
+    InvalidateLayoutAndVolatility();
+
+    /*
+     * ============================================================
+     * DEBUG INFORMATION
+     * ============================================================
+     */
+
+    const FVector2D LocalSize =
+        GetCachedGeometry().GetLocalSize();
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "MORABEZA DIALOGUE WIDGET: LocalSize X=%f Y=%f"
+        ),
+        LocalSize.X,
+        LocalSize.Y
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("==================================================")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: DISPLAYING DIALOGUE")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "Speaker: %s"
+        ),
+        *SpeakerName.ToString()
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "Text: %s"
+        ),
+        *InDialogueText.ToString()
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "Visibility: VISIBLE"
+        )
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "Panel: 1100 x 300"
+        )
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("==================================================")
+    );
+}
+
+void UMORABEZADialogueWidget::HideDialogue()
+{
+    SetVisibility(
+        ESlateVisibility::Collapsed
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "MORABEZA DIALOGUE WIDGET: HIDDEN"
+        )
+    );
+}

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "MORABEZADialogueWidget.h"
 #include "MORABEZAHUD.generated.h"
 
 class UMORABEZAInteractionWidget;

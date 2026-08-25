@@ -1,0 +1,339 @@
+#include "MORABEZADialogueWidget.h"
+
+#include "Blueprint/WidgetTree.h"
+#include "Components/Border.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
+#include "Styling/CoreStyle.h"
+
+void UMORABEZADialogueWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: NativeConstruct")
+    );
+
+    /*
+     * ROOT
+     */
+    RootCanvas =
+        WidgetTree->ConstructWidget<UCanvasPanel>(
+            UCanvasPanel::StaticClass()
+        );
+
+    WidgetTree->RootWidget = RootCanvas;
+
+    /*
+     * DIALOGUE PANEL
+     */
+    DialoguePanel =
+        WidgetTree->ConstructWidget<UBorder>(
+            UBorder::StaticClass()
+        );
+
+    RootCanvas->AddChild(DialoguePanel);
+
+    UCanvasPanelSlot* PanelSlot =
+        Cast<UCanvasPanelSlot>(DialoguePanel->Slot);
+
+    if (PanelSlot)
+    {
+        /*
+         * FULL SCREEN ANCHOR.
+         */
+        PanelSlot->SetAnchors(
+            FAnchors(
+                0.0f,
+                0.65f,
+                1.0f,
+                0.95f
+            )
+        );
+
+        PanelSlot->SetOffsets(
+            FMargin(
+                80.0f,
+                0.0f,
+                -80.0f,
+                0.0f
+            )
+        );
+
+        PanelSlot->SetAlignment(
+            FVector2D(
+                0.0f,
+                0.0f
+            )
+        );
+    }
+
+    /*
+     * VERY OBVIOUS DEBUG BACKGROUND.
+     */
+    DialoguePanel->SetBrushColor(
+        FLinearColor(
+            0.02f,
+            0.02f,
+            0.02f,
+            0.95f
+        )
+    );
+
+    DialoguePanel->SetPadding(
+        FMargin(
+            40.0f
+        )
+    );
+
+    /*
+     * CONTENT BOX
+     */
+    UVerticalBox* MainBox =
+        WidgetTree->ConstructWidget<UVerticalBox>(
+            UVerticalBox::StaticClass()
+        );
+
+    DialoguePanel->SetContent(MainBox);
+
+    /*
+     * SPEAKER
+     */
+    SpeakerText =
+        WidgetTree->ConstructWidget<UTextBlock>(
+            UTextBlock::StaticClass()
+        );
+
+    SpeakerText->SetText(
+        FText::FromString(
+            TEXT("MORABEZA")
+        )
+    );
+
+    SpeakerText->SetFont(
+        FSlateFontInfo(
+            FCoreStyle::GetDefaultFont(),
+            32
+        )
+    );
+
+    SpeakerText->SetColorAndOpacity(
+        FSlateColor(
+            FLinearColor::White
+        )
+    );
+
+    MainBox->AddChildToVerticalBox(
+        SpeakerText
+    );
+
+    /*
+     * DIALOGUE TEXT
+     */
+    DialogueTextBlock =
+        WidgetTree->ConstructWidget<UTextBlock>(
+            UTextBlock::StaticClass()
+        );
+
+    DialogueTextBlock->SetText(
+        FText::FromString(
+            TEXT("DIALOGUE TEST")
+        )
+    );
+
+    DialogueTextBlock->SetFont(
+        FSlateFontInfo(
+            FCoreStyle::GetDefaultFont(),
+            30
+        )
+    );
+
+    DialogueTextBlock->SetColorAndOpacity(
+        FSlateColor(
+            FLinearColor::White
+        )
+    );
+
+    DialogueTextBlock->SetAutoWrapText(true);
+
+    UVerticalBoxSlot* DialogueSlot =
+        MainBox->AddChildToVerticalBox(
+            DialogueTextBlock
+        );
+
+    if (DialogueSlot)
+    {
+        DialogueSlot->SetPadding(
+            FMargin(
+                0.0f,
+                20.0f,
+                0.0f,
+                20.0f
+            )
+        );
+    }
+
+    /*
+     * CONTINUE
+     */
+    ContinueText =
+        WidgetTree->ConstructWidget<UTextBlock>(
+            UTextBlock::StaticClass()
+        );
+
+    ContinueText->SetText(
+        FText::FromString(
+            TEXT("[E] CONTINUAR")
+        )
+    );
+
+    ContinueText->SetFont(
+        FSlateFontInfo(
+            FCoreStyle::GetDefaultFont(),
+            24
+        )
+    );
+
+    ContinueText->SetColorAndOpacity(
+        FSlateColor(
+            FLinearColor::White
+        )
+    );
+
+    MainBox->AddChildToVerticalBox(
+        ContinueText
+    );
+
+    /*
+     * START HIDDEN.
+     */
+    DialoguePanel->SetVisibility(
+        ESlateVisibility::Collapsed
+    );
+
+    SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SetRenderOpacity(1.0f);
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: Constructed successfully")
+    );
+}
+
+void UMORABEZADialogueWidget::ShowDialogue(
+    const FText& SpeakerName,
+    const FText& InDialogueText
+)
+{
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: ShowDialogue CALLED")
+    );
+
+    if (!DialoguePanel ||
+        !SpeakerText ||
+        !DialogueTextBlock ||
+        !ContinueText)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT("MORABEZA DIALOGUE WIDGET: COMPONENTS INVALID")
+        );
+
+        return;
+    }
+
+    SpeakerText->SetText(
+        SpeakerName
+    );
+
+    DialogueTextBlock->SetText(
+        InDialogueText
+    );
+
+    ContinueText->SetText(
+        FText::FromString(
+            TEXT("[E] CONTINUAR")
+        )
+    );
+
+    /*
+     * FORCE ROOT VISIBLE.
+     */
+    SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    SetRenderOpacity(
+        1.0f
+    );
+
+    /*
+     * FORCE PANEL VISIBLE.
+     */
+    DialoguePanel->SetVisibility(
+        ESlateVisibility::Visible
+    );
+
+    DialoguePanel->SetRenderOpacity(
+        1.0f
+    );
+
+    bDialogueVisible = true;
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: ROOT VISIBLE")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: PANEL VISIBLE")
+    );
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "MORABEZA DIALOGUE WIDGET: %s -> %s"
+        ),
+        *SpeakerName.ToString(),
+        *InDialogueText.ToString()
+    );
+}
+
+void UMORABEZADialogueWidget::HideDialogue()
+{
+    if (DialoguePanel)
+    {
+        DialoguePanel->SetVisibility(
+            ESlateVisibility::Collapsed
+        );
+    }
+
+    bDialogueVisible = false;
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT("MORABEZA DIALOGUE WIDGET: HIDDEN")
+    );
+}
+
+bool UMORABEZADialogueWidget::IsDialogueVisible() const
+{
+    return bDialogueVisible;
+}

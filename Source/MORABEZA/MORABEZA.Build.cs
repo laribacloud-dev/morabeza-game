@@ -6,16 +6,19 @@ public class MORABEZA : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new[]
+        PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core",
             "CoreUObject",
             "Engine",
             "InputCore",
-            "EnhancedInput"
+            "EnhancedInput",
+            "UMG",
+            "Slate",
+            "SlateCore"
         });
 
-        PrivateDependencyModuleNames.AddRange(new[]
+        PrivateDependencyModuleNames.AddRange(new string[]
         {
         });
     }

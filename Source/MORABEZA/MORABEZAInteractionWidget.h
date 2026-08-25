@@ -16,6 +16,7 @@ public:
     void SetInteractionPrompt(const FText& Prompt);
 
 protected:
+    virtual TSharedRef<SWidget> RebuildWidget() override;
     virtual void NativeConstruct() override;
 
 private:
