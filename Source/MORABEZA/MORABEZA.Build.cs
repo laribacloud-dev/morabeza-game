@@ -15,7 +15,8 @@ public class MORABEZA : ModuleRules
             "EnhancedInput",
             "UMG",
             "Slate",
-            "SlateCore"
+            "SlateCore",
+            "Landscape"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]
