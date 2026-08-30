@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-
 #include "MORABEZAProceduralCharacterComponent.generated.h"
 
 class UStaticMeshComponent;
@@ -24,52 +23,37 @@ protected:
 
     virtual void BeginPlay() override;
 
-private:
+    virtual void TickComponent(
+        float DeltaTime,
+        ELevelTick TickType,
+        FActorComponentTickFunction* ThisTickFunction
+    ) override;
 
-    /*
-     * ============================================================
-     * CHARACTER CONSTRUCTION
-     * ============================================================
-     */
+private:
 
     void BuildCharacter();
 
-
-    /*
-     * ============================================================
-     * CHARACTER ROOT
-     * ============================================================
-     */
+    void UpdateAnimation(
+        float DeltaTime
+    );
 
     UPROPERTY()
     TObjectPtr<USceneComponent> CharacterRoot;
 
-
-    /*
-     * ============================================================
-     * HEAD
-     * ============================================================
-     */
-
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> Head;
 
+    UPROPERTY()
+    TObjectPtr<UStaticMeshComponent> Hair;
 
-    /*
-     * ============================================================
-     * TORSO
-     * ============================================================
-     */
+    UPROPERTY()
+    TObjectPtr<UStaticMeshComponent> Neck;
 
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> Torso;
 
-
-    /*
-     * ============================================================
-     * ARMS
-     * ============================================================
-     */
+    UPROPERTY()
+    TObjectPtr<UStaticMeshComponent> Hips;
 
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> LeftArm;
@@ -77,29 +61,29 @@ private:
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> RightArm;
 
-
-    /*
-     * ============================================================
-     * LEGS
-     * ============================================================
-     */
-
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> LeftLeg;
 
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> RightLeg;
 
-
-    /*
-     * ============================================================
-     * FEET
-     * ============================================================
-     */
-
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> LeftFoot;
 
     UPROPERTY()
     TObjectPtr<UStaticMeshComponent> RightFoot;
+
+    FRotator InitialLeftArmRotation;
+    FRotator InitialRightArmRotation;
+
+    FRotator InitialLeftLegRotation;
+    FRotator InitialRightLegRotation;
+
+    FVector InitialCharacterRootLocation;
+
+    FVector InitialHeadLocation;
+
+    float AnimationTime = 0.0f;
+
+    float CurrentAnimationWeight = 0.0f;
 };

@@ -1,11 +1,13 @@
 #include "MORABEZACharacter.h"
+#include "Character/MORABEZAProceduralCharacterComponent.h"
+
+#include "Components/CapsuleComponent.h"
 
 #include "UObject/ConstructorHelpers.h"
 
 #include "Engine/SkeletalMesh.h"
 
 #include "Animation/AnimationAsset.h"
-#include "Animation/AnimSingleNodeInstance.h"
 
 #include "Camera/CameraComponent.h"
 
@@ -33,129 +35,15 @@ AMORABEZACharacter::AMORABEZACharacter()
 
     /*
      * ============================================================
-     * CHARACTER MESH
+     * CHARACTER VISUALS
      * ============================================================
+     *
+     * The playable character is currently provided by
+     * UMORABEZAProceduralCharacterComponent.
+     *
+     * The previous Manny skeletal-mesh references were removed
+     * because those assets are not present in this UE 5.8 install.
      */
-
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-        CharacterMeshAsset(
-            TEXT(
-                "/MoverExamples/Characters/Mannequins/Meshes/"
-                "SKM_Manny_Simple.SKM_Manny_Simple"
-            )
-        );
-
-    if (CharacterMeshAsset.Succeeded())
-    {
-        GetMesh()->SetSkeletalMesh(
-            CharacterMeshAsset.Object
-        );
-
-        GetMesh()->SetRelativeLocation(
-            FVector(
-                0.0f,
-                0.0f,
-                -90.0f
-            )
-        );
-
-        GetMesh()->SetRelativeRotation(
-            FRotator(
-                0.0f,
-                -90.0f,
-                0.0f
-            )
-        );
-
-        GetMesh()->SetVisibility(true);
-        GetMesh()->SetHiddenInGame(false);
-
-        UE_LOG(
-            LogTemp,
-            Warning,
-            TEXT(
-                "MORABEZA: SKM_Manny_Simple loaded successfully."
-            )
-        );
-    }
-    else
-    {
-        UE_LOG(
-            LogTemp,
-            Error,
-            TEXT(
-                "MORABEZA: Could not load SKM_Manny_Simple."
-            )
-        );
-    }
-
-
-    /*
-     * ============================================================
-     * ANIMATIONS
-     * ============================================================
-     */
-
-    static ConstructorHelpers::FObjectFinder<UAnimationAsset>
-        IdleAsset(
-            TEXT(
-                "/MoverExamples/Characters/Mannequins/Animations/"
-                "Manny/MM_Idle.MM_Idle"
-            )
-        );
-
-    if (IdleAsset.Succeeded())
-    {
-        IdleAnimation = IdleAsset.Object;
-    }
-
-
-    static ConstructorHelpers::FObjectFinder<UAnimationAsset>
-        WalkAsset(
-            TEXT(
-                "/MoverExamples/Characters/Mannequins/Animations/"
-                "Manny/MM_Walk_Fwd.MM_Walk_Fwd"
-            )
-        );
-
-    if (WalkAsset.Succeeded())
-    {
-        WalkAnimation = WalkAsset.Object;
-    }
-
-
-    static ConstructorHelpers::FObjectFinder<UAnimationAsset>
-        RunAsset(
-            TEXT(
-                "/MoverExamples/Characters/Mannequins/Animations/"
-                "Manny/MM_Run_Fwd.MM_Run_Fwd"
-            )
-        );
-
-    if (RunAsset.Succeeded())
-    {
-        RunAnimation = RunAsset.Object;
-    }
-
-
-    /*
-     * ============================================================
-     * INITIAL ANIMATION
-     * ============================================================
-     */
-
-    if (IdleAnimation)
-    {
-        GetMesh()->SetAnimationMode(
-            EAnimationMode::AnimationSingleNode
-        );
-
-        GetMesh()->PlayAnimation(
-            IdleAnimation,
-            true
-        );
-    }
-
 
     /*
      * ============================================================
@@ -266,6 +154,25 @@ AMORABEZACharacter::AMORABEZACharacter()
         CreateDefaultSubobject<UMORABEZAInteractionComponent>(
             TEXT("InteractionComponent")
         );
+
+
+    /*
+     * ============================================================
+     * PROCEDURAL CHARACTER
+     * ============================================================
+     *
+     * Temporary guaranteed-visible MORABEZA character.
+     * This will later be replaced by the final artist-created
+     * female skeletal character.
+     */
+
+    ProceduralCharacter =
+        CreateDefaultSubobject<UMORABEZAProceduralCharacterComponent>(
+            TEXT("ProceduralCharacter")
+        );
+
+    ProceduralCharacter->SetupAttachment(GetCapsuleComponent());
+
 
 
     /*
@@ -751,97 +658,7 @@ void AMORABEZACharacter::Tick(
 )
 {
     Super::Tick(DeltaTime);
-
-    if (!GetMesh())
-    {
-        return;
-    }
-
-
-    /*
-     * ============================================================
-     * MOVEMENT SPEED
-     * ============================================================
-     */
-
-    const FVector Velocity =
-        GetVelocity();
-
-    const float HorizontalSpeed =
-        FVector(
-            Velocity.X,
-            Velocity.Y,
-            0.0f
-        ).Size();
-
-
-    /*
-     * ============================================================
-     * SELECT ANIMATION
-     * ============================================================
-     */
-
-    UAnimationAsset* DesiredAnimation =
-        nullptr;
-
-
-    if (HorizontalSpeed < 5.0f)
-    {
-        DesiredAnimation = IdleAnimation;
-    }
-    else if (HorizontalSpeed < 250.0f)
-    {
-        DesiredAnimation = WalkAnimation;
-    }
-    else
-    {
-        DesiredAnimation = RunAnimation;
-    }
-
-
-    /*
-     * ============================================================
-     * CURRENT ANIMATION
-     * ============================================================
-     */
-
-    UAnimSingleNodeInstance*
-        SingleNodeInstance =
-            GetMesh()->GetSingleNodeInstance();
-
-    UAnimationAsset* CurrentAnimation =
-        nullptr;
-
-
-    if (SingleNodeInstance)
-    {
-        CurrentAnimation =
-            SingleNodeInstance->GetAnimationAsset();
-    }
-
-
-    /*
-     * ============================================================
-     * UPDATE ANIMATION
-     * ============================================================
-     */
-
-    if (
-        DesiredAnimation &&
-        CurrentAnimation != DesiredAnimation
-    )
-    {
-        GetMesh()->SetAnimationMode(
-            EAnimationMode::AnimationSingleNode
-        );
-
-        GetMesh()->PlayAnimation(
-            DesiredAnimation,
-            true
-        );
-    }
 }
-
 
 /*
  * ================================================================
@@ -1028,11 +845,32 @@ void AMORABEZACharacter::MoveForward(
         Value.Get<float>();
 
 
-    if (
-        !Controller ||
-        FMath::IsNearlyZero(AxisValue)
-    )
+    if (FMath::IsNearlyZero(AxisValue))
     {
+        return;
+    }
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "MORABEZA MOVEMENT: MoveForward Axis=%f Controller=%s Location=%s"
+        ),
+        AxisValue,
+        Controller ? TEXT("VALID") : TEXT("NULL"),
+        *GetActorLocation().ToString()
+    );
+
+    if (!Controller)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT(
+                "MORABEZA MOVEMENT ERROR: Controller is NULL."
+            )
+        );
+
         return;
     }
 
@@ -1063,11 +901,32 @@ void AMORABEZACharacter::MoveRight(
         Value.Get<float>();
 
 
-    if (
-        !Controller ||
-        FMath::IsNearlyZero(AxisValue)
-    )
+    if (FMath::IsNearlyZero(AxisValue))
     {
+        return;
+    }
+
+    UE_LOG(
+        LogTemp,
+        Warning,
+        TEXT(
+            "MORABEZA MOVEMENT: MoveRight Axis=%f Controller=%s Location=%s"
+        ),
+        AxisValue,
+        Controller ? TEXT("VALID") : TEXT("NULL"),
+        *GetActorLocation().ToString()
+    );
+
+    if (!Controller)
+    {
+        UE_LOG(
+            LogTemp,
+            Error,
+            TEXT(
+                "MORABEZA MOVEMENT ERROR: Controller is NULL."
+            )
+        );
+
         return;
     }
 

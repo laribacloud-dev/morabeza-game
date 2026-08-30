@@ -46,3 +46,16 @@ Thumbs.db
 # Large local assets - keep source assets in controlled project storage
 *.psd
 *.blend1
+
+# Local Unreal packaging/output
+Builds/
+
+# Local backup files
+*.uproject.backup
+
+# Local backup / intermediate source copies
+*.backup
+*.backup_*
+*.step2-working
+
+*.backup-*

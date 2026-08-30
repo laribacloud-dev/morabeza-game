@@ -11,7 +11,7 @@ UMORABEZAInteractionComponent::UMORABEZAInteractionComponent()
     PrimaryComponentTick.bCanEverTick = true;
 
     InteractionDistance = 350.0f;
-    InteractionTraceDistance = 500.0f;
+    InteractionTraceDistance = 2000.0f;
 }
 
 void UMORABEZAInteractionComponent::BeginPlay()
